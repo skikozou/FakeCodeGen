@@ -142,26 +142,31 @@ func srcGen(raw [][]string) *src {
 	return source
 }
 
-func rfGen(l []string) runfunc {
+func rfGen(line []string) runfunc {
 	rObj := runfunc{}
-	rObj.name = append(rObj.name, l[0])
-	l = l[1:]
-	n := make([]int, 3)
-	for i := 0; i < len(l); i++ {
+	rObj.name = append(rObj.name, line[0])
+	for _, w := range line[1:] {
 		randn := rand.Intn(3)
-		n[randn]++
+		if randn == 0 {
+			rObj.name = append(rObj.name, w)
+		} else if randn == 1 {
+			rObj.retu = append(rObj.retu, w)
+		} else {
+			rObj.arg = append(rObj.arg, w)
+		}
 	}
-	if n[0]-1 >= 0 {
-		rObj.retu = append(rObj.retu, l[:n[0]-1]...)
+	for j, _ := range rObj.retu {
+		rObj.retu[j] = line[0]
+		line = line[1:]
 	}
-	if n[0]+n[1]-1 >= n[0] {
-		rObj.name = append(rObj.name, l[n[0]:n[0]+n[1]-1]...)
+	for j, _ := range rObj.name {
+		rObj.name[j] = line[0]
+		line = line[1:]
 	}
-	if len(l)-1 >= n[0]+n[1] {
-		rObj.arg = append(rObj.arg, l[n[0]+n[1]:]...)
+	for j, _ := range rObj.arg {
+		rObj.arg[j] = line[0]
+		line = line[1:]
 	}
-	fmt.Println(n, len(l))
-	fmt.Println(rObj.retu, rObj.name, rObj.arg, 0, n[0]-1, n[0], n[0]+n[1]-1, n[0]+n[1], len(l)-1)
 	return rObj
 }
 
