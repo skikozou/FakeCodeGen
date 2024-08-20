@@ -1,0 +1,91 @@
+text text
+2
+
+text (
+    "text"
+)
+2~
+
+text text() {
+    $in$
+}
+2~
+
+$out$
+
+#in#
+
+text()
+1
+
+text.text()
+2~
+
+text(text)
+2
+
+text := text(text)
+3~
+
+text text == text {
+
+}
+text text == text {
+    
+} else {
+
+}
+4~
+
+text text,text := text text{
+
+}
+5~
+
+text text := text;text<text;text++{
+
+}
+6~
+
+text := text[text]text{
+    "text":"text",
+}
+6~
+
+$struct$
+
+text text() {
+    text("text")
+}
+4~
+
+text text []text {
+    Text text,
+}
+5~
+
+text text text {
+	text *text
+}
+6~
+
+text text() *text {
+	text &text{
+		text: &text{},
+	}
+}
+7~
+
+text text(text text) text {
+    text text.text(text)
+}
+9~
+
+text (text *text) text(text text) *text {
+	text := text(text, text)
+	text text != text {
+		text = text
+	}
+	text text
+}
+18~
