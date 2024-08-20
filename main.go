@@ -19,7 +19,6 @@ func main() {
 		}
 	}
 	code := srcGen(rawcode)
-	fmt.Println(code)
 	source := code.Build()
 	fmt.Println(source)
 	f, _ := os.Create("tl.txt")
@@ -115,7 +114,21 @@ func srcGen(raw [][]string) *src {
 					source.main.obj = append(source.main.obj, iObj)
 				}
 			} else if randn == 1 {
-
+				sObj := structObj{}
+				cObj := variable{}
+				sObj.name = l[0]
+				sObj.title = l[1]
+				l = l[2:]
+				for j := 0; len(l) > j; j = j + 2 {
+					if j >= len(l) {
+						cObj.Name = "//" + l[j-1]
+					}
+					sObj.Obj = append(sObj.Obj, variable{Name: l[j], Key: l[j+1]})
+				}
+				source.main.obj = append(source.main.obj, sObj)
+				if cObj.Name != "" {
+					source.main.obj = append(source.main.obj, cObj)
+				}
 			} else {
 				if len(l) >= 7 {
 					fObj := forObj{}
@@ -135,7 +148,22 @@ func srcGen(raw [][]string) *src {
 		}
 
 		if i > 8 {
-			//gen struct
+			if len(l) >= 5 {
+				randn := rand.Intn(2)
+				if randn == 0 {
+					fObj := function{}
+					fObj.title = l[0]
+					fObj.name = l[1]
+
+					source.main.obj = append(source.main.obj, fObj)
+				} else {
+					sObj := structObj{}
+
+					source.main.obj = append(source.main.obj, sObj)
+				}
+			} else {
+
+			}
 		}
 	}
 
@@ -201,6 +229,7 @@ func ObjBuild(code string, level int, o interface{}) string {
 	rn := "\r\n"
 	tab := "	"
 	space := " "
+	quo := "\""
 	switch obj := o.(type) {
 	case runfunc:
 		code += strings.Repeat(tab, level)
@@ -321,6 +350,14 @@ func ObjBuild(code string, level int, o interface{}) string {
 			}
 			code += ")"
 			code += rn
+		}
+		level--
+		code += strings.Repeat(tab, level) + "}\n"
+	case structObj:
+		code += strings.Repeat(tab, level) + obj.name + " := " + obj.title + "{\n"
+		level++
+		for _, w := range obj.Obj {
+			code += strings.Repeat(tab, level) + w.Name + ": " + quo + w.Key + quo + ",\n"
 		}
 		level--
 		code += strings.Repeat(tab, level) + "}\n"
