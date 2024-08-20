@@ -113,32 +113,6 @@ func srcGen(raw [][]string) *src {
 					iObj.conditions2 = l[2]
 					iObj.Obj = append(iObj.Obj, rfGen(l[3:]))
 					source.main.obj = append(source.main.obj, iObj)
-				} else {
-					rObj := runfunc{}
-					rObj.name = append(rObj.name, l[0])
-					for _, w := range l[1:] {
-						randn = rand.Intn(3)
-						if randn == 0 {
-							rObj.name = append(rObj.name, w)
-						} else if randn == 1 {
-							rObj.retu = append(rObj.retu, w)
-						} else {
-							rObj.arg = append(rObj.arg, w)
-						}
-					}
-					for j, _ := range rObj.retu {
-						rObj.retu[j] = l[0]
-						l = l[1:]
-					}
-					for j, _ := range rObj.name {
-						rObj.name[j] = l[0]
-						l = l[1:]
-					}
-					for j, _ := range rObj.arg {
-						rObj.arg[j] = l[0]
-						l = l[1:]
-					}
-					source.main.obj = append(source.main.obj, rObj)
 				}
 			} else if randn == 1 {
 
@@ -154,30 +128,7 @@ func srcGen(raw [][]string) *src {
 					fObj.Obj = append(fObj.Obj, rfGen(l[6:]))
 					source.main.obj = append(source.main.obj, fObj)
 				} else {
-					rObj := runfunc{}
-					rObj.name = append(rObj.name, l[0])
-					for _, w := range l[1:] {
-						randn = rand.Intn(3)
-						if randn == 0 {
-							rObj.name = append(rObj.name, w)
-						} else if randn == 1 {
-							rObj.retu = append(rObj.retu, w)
-						} else {
-							rObj.arg = append(rObj.arg, w)
-						}
-					}
-					for j, _ := range rObj.retu {
-						rObj.retu[j] = l[0]
-						l = l[1:]
-					}
-					for j, _ := range rObj.name {
-						rObj.name[j] = l[0]
-						l = l[1:]
-					}
-					for j, _ := range rObj.arg {
-						rObj.arg[j] = l[0]
-						l = l[1:]
-					}
+					rObj := rfGen(l)
 					source.main.obj = append(source.main.obj, rObj)
 				}
 			}
@@ -191,31 +142,26 @@ func srcGen(raw [][]string) *src {
 	return source
 }
 
-func rfGen(line []string) runfunc {
+func rfGen(l []string) runfunc {
 	rObj := runfunc{}
-	rObj.name = append(rObj.name, line[0])
-	for _, w := range line[1:] {
+	rObj.name = append(rObj.name, l[0])
+	l = l[1:]
+	n := make([]int, 3)
+	for i := 0; i < len(l); i++ {
 		randn := rand.Intn(3)
-		if randn == 0 {
-			rObj.name = append(rObj.name, w)
-		} else if randn == 1 {
-			rObj.retu = append(rObj.retu, w)
-		} else {
-			rObj.arg = append(rObj.arg, w)
-		}
+		n[randn]++
 	}
-	for j, _ := range rObj.retu {
-		rObj.retu[j] = line[0]
-		line = line[1:]
+	if n[0]-1 >= 0 {
+		rObj.retu = append(rObj.retu, l[:n[0]-1]...)
 	}
-	for j, _ := range rObj.name {
-		rObj.name[j] = line[0]
-		line = line[1:]
+	if n[0]+n[1]-1 >= n[0] {
+		rObj.name = append(rObj.name, l[n[0]:n[0]+n[1]-1]...)
 	}
-	for j, _ := range rObj.arg {
-		rObj.arg[j] = line[0]
-		line = line[1:]
+	if len(l)-1 >= n[0]+n[1] {
+		rObj.arg = append(rObj.arg, l[n[0]+n[1]:]...)
 	}
+	fmt.Println(n, len(l))
+	fmt.Println(rObj.retu, rObj.name, rObj.arg, 0, n[0]-1, n[0], n[0]+n[1]-1, n[0]+n[1], len(l)-1)
 	return rObj
 }
 
