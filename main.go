@@ -79,6 +79,45 @@ func srcGen(raw [][]string) *src {
 	//main obj
 	nraw := raw[2:]
 	for i, l := range nraw {
+		if i > 5 {
+			if len(l) >= 5 {
+				randn := rand.Intn(2)
+				if randn == 0 {
+					fObj := function{}
+					fObj.title = l[0]
+					fObj.name = l[1]
+					randn = rand.Intn(2)
+					if randn == 0 {
+						fObj.args = append(fObj.args, variable{Name: l[2], Key: l[3]})
+						fObj.obj = append(fObj.obj, rfGen(l[4:]))
+					} else {
+						fObj.obj = append(fObj.obj, rfGen(l[2:]))
+					}
+					source.main.obj = append(source.main.obj, fObj)
+				} else {
+					sObj := structure{}
+					cObj := variable{}
+					sObj.typename = l[0]
+					sObj.name = l[1]
+					sObj.title = l[2]
+					l = l[3:]
+					for j := 1; len(l) > j; j = j + 2 {
+						if j >= len(l) {
+							cObj.Name = "//" + l[j-1]
+						}
+						sObj.Obj = append(sObj.Obj, variable{Name: l[j], Key: l[j-1]})
+					}
+					source.main.obj = append(source.main.obj, sObj)
+					if cObj.Name != "" {
+						source.main.obj = append(source.main.obj, cObj)
+					}
+				}
+			} else {
+				source.main.obj = append(source.main.obj, rfGen(l))
+			}
+			continue
+		}
+
 		if len(l) == 1 {
 			source.main.obj = append(source.main.obj, runfunc{name: []string{l[0]}})
 		} else if len(l) <= 5 {
@@ -119,11 +158,11 @@ func srcGen(raw [][]string) *src {
 				sObj.name = l[0]
 				sObj.title = l[1]
 				l = l[2:]
-				for j := 0; len(l) > j; j = j + 2 {
+				for j := 1; len(l) > j; j = j + 2 {
 					if j >= len(l) {
 						cObj.Name = "//" + l[j-1]
 					}
-					sObj.Obj = append(sObj.Obj, variable{Name: l[j], Key: l[j+1]})
+					sObj.Obj = append(sObj.Obj, variable{Name: l[j], Key: l[j-1]})
 				}
 				source.main.obj = append(source.main.obj, sObj)
 				if cObj.Name != "" {
@@ -144,25 +183,6 @@ func srcGen(raw [][]string) *src {
 					rObj := rfGen(l)
 					source.main.obj = append(source.main.obj, rObj)
 				}
-			}
-		}
-
-		if i > 8 {
-			if len(l) >= 5 {
-				randn := rand.Intn(2)
-				if randn == 0 {
-					fObj := function{}
-					fObj.title = l[0]
-					fObj.name = l[1]
-
-					source.main.obj = append(source.main.obj, fObj)
-				} else {
-					sObj := structObj{}
-
-					source.main.obj = append(source.main.obj, sObj)
-				}
-			} else {
-
 			}
 		}
 	}
@@ -264,9 +284,9 @@ func ObjBuild(code string, level int, o interface{}) string {
 		code += rn
 	case variable:
 		if obj.Key == "" {
-			code += obj.Name
+			code += strings.Repeat(tab, level) + obj.Name + rn
 		}
-		code += obj.Name + " := " + obj.Key
+		code += strings.Repeat(tab, level) + obj.Name + " := " + obj.Key + rn
 	case ifObj:
 		code += strings.Repeat(tab, level) + obj.title + space + obj.conditions1 + space
 		randn := rand.Intn(6)
