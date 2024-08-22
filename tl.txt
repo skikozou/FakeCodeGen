@@ -8,10 +8,8 @@ kato (
 
 kono code() {
 	ga, yometeiru := toiukotoha.anataha(programmer.desune)
-	zehi := watashitachino{
-		evex: "team",
-		hairimasyou: "ni",
-	}
+	zehi.watashitachino.team(evex.ni.hairimasyou)
 	omatisiteimasu()
 	Discord("https://discord.gg/evex")
 }
+

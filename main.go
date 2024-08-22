@@ -93,7 +93,7 @@ func srcGen(raw [][]string) *src {
 					} else {
 						fObj.obj = append(fObj.obj, rfGen(l[2:]))
 					}
-					source.main.obj = append(source.main.obj, fObj)
+					source.stru = append(source.stru, fObj)
 				} else {
 					sObj := structure{}
 					cObj := variable{}
@@ -105,15 +105,15 @@ func srcGen(raw [][]string) *src {
 						if j >= len(l) {
 							cObj.Name = "//" + l[j-1]
 						}
-						sObj.Obj = append(sObj.Obj, variable{Name: l[j], Key: l[j-1]})
+						sObj.Obj = append(sObj.Obj, variable{Name: l[j-1], Key: l[j]})
 					}
-					source.main.obj = append(source.main.obj, sObj)
+					source.stru = append(source.stru, sObj)
 					if cObj.Name != "" {
-						source.main.obj = append(source.main.obj, cObj)
+						source.stru = append(source.stru, cObj)
 					}
 				}
 			} else {
-				source.main.obj = append(source.main.obj, rfGen(l))
+				source.stru = append(source.stru, rfGen(l))
 			}
 			continue
 		}
@@ -235,9 +235,8 @@ func (s *src) Build() string {
 	for _, o := range s.main.obj {
 		code = ObjBuild(code, level, o)
 	}
-	code += "}"
 	level--
-
+	code += "}\n\n"
 	for _, s := range s.stru {
 		code = StrBuild(code, level, s)
 	}
@@ -388,11 +387,33 @@ func ObjBuild(code string, level int, o interface{}) string {
 }
 
 func StrBuild(code string, level int, s interface{}) string {
+	rn := "\r\n"
+	tab := "	"
+	space := " "
 	switch stru := s.(type) {
 	case function:
-		stru.name += ""
+		code += strings.Repeat(tab, level) + stru.title + space + stru.name + "("
+		for i, w := range stru.args {
+			code += stru.name + space + w.Key
+			if i != len(stru.args)-1 {
+				code += ", "
+			}
+		}
+		code += ")" + space + "{" + rn
+		level++
+		for _, l := range stru.obj {
+			code = ObjBuild(code, level, l)
+		}
+		level--
+		code += strings.Repeat(tab, level) + "}" + rn + rn
 	case structure:
-
+		code += strings.Repeat(tab, level) + stru.typename + space + stru.name + space + stru.title + space + "{" + rn
+		level++
+		for _, v := range stru.Obj {
+			code += strings.Repeat(tab, level) + v.Name + tab + v.Key + rn
+		}
+		level--
+		code += "}" + rn + rn
 	default:
 	}
 	return code
