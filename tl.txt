@@ -7,8 +7,8 @@ kato (
 )
 
 kono code() {
-	ga, yometeiru := toiukotoha.anataha(programmer.desune)
-	zehi watashitachino <= team {
+	ga, yometeiru := toiukotoha.anataha(programmer, desune)
+	zehi watashitachino > team {
 		evex := ni(hairimasyou)
 	}
 	omatisiteimasu()

@@ -75,20 +75,16 @@ func srcGen(raw [][]string) *src {
 					source.stru = append(source.stru, fObj)
 				} else {
 					sObj := structure{}
-					cObj := variable{}
 					sObj.typename = l[0]
 					sObj.name = l[1]
 					sObj.title = l[2]
 					l = l[3:]
 					for j := 1; len(l) > j; j = j + 2 {
-						if j >= len(l) {
-							cObj.Name = "//" + l[j-1]
-						}
 						sObj.Obj = append(sObj.Obj, variable{Name: l[j-1], Key: l[j]})
 					}
 					source.stru = append(source.stru, sObj)
-					if cObj.Name != "" {
-						source.stru = append(source.stru, cObj)
+					if len(l)%2 == 1 {
+						source.stru = append(source.stru, variable{Name: "//" + l[len(l)-1]})
 					}
 				}
 			} else {
@@ -132,20 +128,17 @@ func srcGen(raw [][]string) *src {
 					source.main.obj = append(source.main.obj, iObj)
 				}
 			} else if randn == 1 {
-				sObj := structObj{}
-				cObj := variable{}
-				sObj.name = l[0]
-				sObj.title = l[1]
-				l = l[2:]
+				sObj := structure{}
+				sObj.typename = l[0]
+				sObj.name = l[1]
+				sObj.title = l[2]
+				l = l[3:]
 				for j := 1; len(l) > j; j = j + 2 {
-					if j >= len(l) {
-						cObj.Name = "//" + l[j-1]
-					}
-					sObj.Obj = append(sObj.Obj, variable{Name: l[j], Key: l[j-1]})
+					sObj.Obj = append(sObj.Obj, variable{Name: l[j-1], Key: l[j]})
 				}
-				source.main.obj = append(source.main.obj, sObj)
-				if cObj.Name != "" {
-					source.main.obj = append(source.main.obj, cObj)
+				source.stru = append(source.stru, sObj)
+				if len(l)%2 == 1 {
+					source.stru = append(source.stru, variable{Name: "//" + l[len(l)-1]})
 				}
 			} else {
 				if len(l) >= 7 {
