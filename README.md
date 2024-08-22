@@ -1,5 +1,6 @@
 # fake code Generater
-Golang style code
+
+### Golang style code
 
 ## sample
 
